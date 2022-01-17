@@ -59,32 +59,33 @@ public class MainActivity3 extends AppCompatActivity {
             }
         });
     }
-    final int mx = 110;
+    final int sz1 = 16;
+    final int sz2 = 21;
+    final int mx = sz1*(sz2-2);
     int par = 0;
     private void showTextSmall(String s)
     {
         par = 1 - par;
         ImageView iv = (ImageView) findViewById(R.id.imageView);
-
-        Bitmap bitmap = Bitmap.createBitmap(10, 13, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(sz1+2, sz2 + 2, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
         Paint paintBg = new Paint();
         paintBg.setColor(Color.WHITE);
-        canvas.drawRect(0, 0, 11, 14, paintBg);
+        canvas.drawRect(0, 0, sz1 + 3, sz2 + 3, paintBg);
         StringBuilder a = new StringBuilder();
-        for(int i=0;i<10;i++)
+        for(int i=0;i<sz1;i++)
             if((i+par)%2==0)
                 a.append('2');
             else
                 a.append('3');
-        while(s.length()<110)
+        while(s.length()<mx)
             s = s + "0";
         s = a + s + a;
         for(int i=0;i<s.length();i++)
         {
-            int x = i%10;
-            int y = i/10;
+            int x = i%sz1;
+            int y = i/sz1;
             Paint col = paintBg;
             if(s.charAt(i)=='0')
                 col.setColor(Color.WHITE);
@@ -94,10 +95,14 @@ public class MainActivity3 extends AppCompatActivity {
                 col.setColor(Color.WHITE);
             else if(s.charAt(i)=='3')
                 col.setColor(Color.BLACK);
-            canvas.drawRect(x, y, x+1, y+1, col);
+            canvas.drawRect(x+1, y+1, x+2, y+2, col);
         }
-
-        iv.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1000, 1300, false));
+        paintBg.setColor(Color.RED);
+        canvas.drawRect(0, 0, 1, 1, paintBg);
+        canvas.drawRect(sz1+1, 0, sz1 + 2, 1, paintBg);
+        canvas.drawRect(0, sz2+1, 1, sz2+2, paintBg);
+        canvas.drawRect(sz1+1, sz2+1, sz1 + 2, sz2+2, paintBg);
+        iv.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1080, 1350, false));
     }
     private void showText(String name, String s, int ms)
     {
@@ -107,9 +112,9 @@ public class MainActivity3 extends AppCompatActivity {
         {
             StringBuilder beg = new StringBuilder();
             StringBuilder beg1 = new StringBuilder();
-            for(int j=0;j<11;j++)
+            for(int j=0;j<sz2-2;j++)
             {
-                for(int i=0;i<10;i++)
+                for(int i=0;i<sz1;i++)
                 {
                     if((i+j)%2==0)
                         beg.append('2');
@@ -117,9 +122,9 @@ public class MainActivity3 extends AppCompatActivity {
                         beg.append('3');
                 }
             }
-            for(int j=0;j<11;j++)
+            for(int j=0;j<sz2-2;j++)
             {
-                for(int i=0;i<10;i++)
+                for(int i=0;i<sz1;i++)
                 {
                     if((i+j)%2==1)
                         beg1.append('2');
