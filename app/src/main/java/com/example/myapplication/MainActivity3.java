@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,16 +15,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewDebug;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity3 extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_STORAGE = 1000;
@@ -31,6 +36,10 @@ public class MainActivity3 extends AppCompatActivity {
     private TextView textView;
     private String name;
     private int del = 1500;
+    private boolean isImage = false;
+    private boolean debugMode = false;
+    Bitmap ImageFile = null;
+    Bitmap ImageFile1 = null;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +52,22 @@ public class MainActivity3 extends AppCompatActivity {
         name = getIntent().getExtras().getString("name");
         byte[]file = getIntent().getExtras().getByteArray("file");
         del = Integer.parseInt(getIntent().getExtras().getString("delay"));
+        iterations = Integer.parseInt(getIntent().getExtras().getString("iterations"));
+        isImage = getIntent().getExtras().getBoolean("image");
+        debugMode = getIntent().getExtras().getBoolean("debug");
+
+        sz1 = Integer.parseInt(getIntent().getExtras().getString("w"));
+        sz2 = Integer.parseInt(getIntent().getExtras().getString("h"));
+        mx = sz1*(sz2-2);
         //path = path.substring(path.indexOf(":")+1);
 //        Toast.makeText(getApplicationContext(), path,
 //                Toast.LENGTH_SHORT).show();
-        String text=byteToString(file);
+        String text = isImage ? byteToStringImage(file, name) : byteToString(file);
+        System.out.println(text.length());
+        System.out.println(text);
 //        Toast.makeText(getApplicationContext(), text,
 //                Toast.LENGTH_SHORT).show();
+
         showText(name, text, del);
 
 
@@ -59,9 +78,9 @@ public class MainActivity3 extends AppCompatActivity {
             }
         });
     }
-    final int sz1 = 16;
-    final int sz2 = 21;
-    final int mx = sz1*(sz2-2);
+    int sz1 = 16;
+    int sz2 = 21;
+    int mx = sz1*(sz2-2);
     int par = 0;
     private void showTextSmall(String s)
     {
@@ -103,9 +122,12 @@ public class MainActivity3 extends AppCompatActivity {
         canvas.drawRect(0, sz2+1, 1, sz2+2, paintBg);
         canvas.drawRect(sz1+1, sz2+1, sz1 + 2, sz2+2, paintBg);
         iv.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 1080, 1350, false));
+        if(debugMode)
+            iv.setImageBitmap(Bitmap.createScaledBitmap(ImageFile1, 1080, 1350, false));
     }
     private void showText(String name, String s, int ms)
     {
+
         final int cntBeg = Math.max(4, 4000/ms);
         textView.setText(name);
         List<String>T = new ArrayList<>();
@@ -155,6 +177,8 @@ public class MainActivity3 extends AppCompatActivity {
                 c/=2;
             }
             T.add(cntBeg * 2, C.toString());
+            System.out.println(C);
+            System.out.println(s.length());
         }
         textView.post(new Runnable() {
             Integer it = 0;
@@ -182,7 +206,8 @@ public class MainActivity3 extends AppCompatActivity {
         for(byte i : fileContent)
         {
             int x = i;
-            x += 128;
+            x += 256;
+            x %= 256;
             for(int t=0;t<8;t++)
             {
                 if(x % 2 == 0)
@@ -198,6 +223,215 @@ public class MainActivity3 extends AppCompatActivity {
 //            text.append(A);
 //            text.append(B);
         }
+        return text.toString();
+    }
+    private int dotP(int x1, int y1, int x2, int y2)
+    {
+        return x1 * x2 + y1 * y2;
+    }
+    private int iterations = 1000;
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String byteToStringImage(byte[] fileContent, String name)
+    {
+        if(fileContent == null)
+            return "";
+        ImageFile = BitmapFactory.decodeByteArray(fileContent, 0, fileContent.length);
+        int[] pixels = new int[ImageFile.getWidth() * ImageFile.getHeight()];
+        int[][][] rgb = new int[ImageFile.getHeight()][ImageFile.getWidth()][3];
+        int[][][] rgb1 = new int[ImageFile.getHeight()][ImageFile.getWidth()][3];
+        ImageFile.getPixels(pixels, 0, ImageFile.getWidth(), 0, 0, ImageFile.getWidth(), ImageFile.getHeight());
+        for (int x = 0; x < ImageFile.getHeight(); x++)
+            for (int y = 0; y < ImageFile.getWidth(); y++){
+                //Color c = Color.valueOf(pixels[x * ImageFile.getWidth() + y]);
+                int ci = pixels[x * ImageFile.getWidth() + y];
+                rgb[x][y][0] = Color.red(ci);
+                rgb[x][y][1] = Color.green(ci);
+                rgb[x][y][2] = Color.blue(ci);
+                rgb1[x][y][0] = 128;
+                rgb1[x][y][1] = 128;
+                rgb1[x][y][2] = 128;
+            }
+        List<Boolean>S = new ArrayList<>();
+        int w = ImageFile.getWidth();
+        int h = ImageFile.getHeight();
+        int s = w;
+        for(int t=0;t<30;t++)
+        {
+            if(t == 15)
+                s = h;
+            if(s % 2 == 1)
+                S.add(true);
+            else
+                S.add(false);
+            s /= 2;
+        }
+        Random rand = new Random();
+        long best = -1;
+        int testc = 0;
+        int logwh = 1;
+        {
+            int sz = 2;
+            while(sz < w * h)
+            {
+                sz *= 2;
+                logwh++;
+            }
+        }
+        for(int tim = 0; tim < iterations; tim++)
+        {
+            int r1 = rand.nextInt(w*h);
+            int r2 = rand.nextInt(w*h);
+            int x1 = r1 % h;
+            int y1 = r1 / h;
+            int x2 = r2 % h;
+            int y2 = r2 / h;
+            int d=Math.abs(x1-x2) + Math.abs(y2-y1);
+            if(d < 2)
+            {
+                tim--;
+                continue;
+            }
+            float prop = (float)(d) / (float)(h+w);
+            if(tim < iterations/20)
+            {
+                if(prop < 0.15 || prop > 0.4)
+                {
+                    tim--;
+                    continue;
+                }
+            }
+            else if (tim < iterations/20*2)
+            {
+                if(prop > 0.20 || prop < 0.07)
+                {
+                    tim--;
+                    continue;
+                }
+            }
+            else if (tim < iterations/20*10)
+            {
+                if(d > 25)
+                {
+                    tim--;
+                    continue;
+                }
+            }
+            else{
+                if(d > 17)
+                {
+                    tim--;
+                    continue;
+                }
+            }
+            int x3 = ((x1 + x2) + (y2 - y1)) / 2;
+            int y3 = ((y1 + y2) + (x1 - x2)) / 2;
+            int x4 = ((x1 + x2) - (y2 - y1)) / 2;
+            int y4 = ((y1 + y2) - (x1 - x2)) / 2;
+            int xmn = Math.min(h - 1, Math.max(0, Math.min(Math.min(x1, x2) , Math.min(x3, x4))));
+            int ymn = Math.min(w - 1, Math.max(0, Math.min(Math.min(y1, y2) , Math.min(y3, y4))));
+            int xmx = Math.min(h - 1, Math.max(0, Math.max(Math.max(x1, x2) , Math.max(x3, x4))));
+            int ymx = Math.min(w - 1, Math.max(0, Math.max(Math.max(y1, y2) , Math.max(y3, y4))));
+            int cnt = 0;
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            for(int x = xmn; x <= xmx; x++)
+            {
+                for(int y = ymn; y <= ymx; y++)
+                {
+                    boolean ok=true;
+                    if(dotP(x3-x1, y3-y1, x-x1, y-y1) < 0)
+                        ok = false;
+                    if(dotP(x4-x1, y4-y1, x-x1, y-y1) < 0)
+                        ok = false;
+                    if(dotP(x3-x2, y3-y2, x-x2, y-y2) < 0)
+                        ok = false;
+                    if(dotP(x4-x2, y4-y2, x-x2, y-y2) < 0)
+                        ok = false;
+                    if(ok)
+                    {
+                        cnt++;
+                        r += rgb[x][y][0] - rgb1[x][y][0];
+                        g += rgb[x][y][1] - rgb1[x][y][1];
+                        b += rgb[x][y][2] - rgb1[x][y][2];
+                    }
+                }
+            }
+            long good = Math.abs(r) + Math.abs(g) + Math.abs(b);
+            r/=cnt;
+            g/=cnt;
+            b/=cnt;
+            r = Math.min(63, Math.max(r, -64));
+            g = Math.min(63, Math.max(g, -64));
+            b = Math.min(63, Math.max(b, -64));
+            testc++;
+            best = Math.max(best, good);
+            if(testc < 30 || best != good)
+            {
+                tim--;
+                continue;
+            }
+            int it = 0;
+            int lg = logwh;
+            for (int vals : new int[]{r1, r2, r + 64,g + 64,b + 64})
+            {
+                it++;
+                if(it == 3)
+                    lg = 7;
+                for(int t=0;t<lg;t++)
+                {
+                    if(vals%2==1)
+                        S.add(true);
+                    else
+                        S.add(false);
+                    vals/=2;
+                }
+            }
+
+
+
+            best = -1;
+            testc = 0;
+            for(int x = xmn; x <= xmx; x++)
+            {
+                for(int y = ymn; y <= ymx; y++)
+                {
+                    boolean ok=true;
+                    if(dotP(x3-x1, y3-y1, x-x1, y-y1) < 0)
+                        ok = false;
+                    if(dotP(x4-x1, y4-y1, x-x1, y-y1) < 0)
+                        ok = false;
+                    if(dotP(x3-x2, y3-y2, x-x2, y-y2) < 0)
+                        ok = false;
+                    if(dotP(x4-x2, y4-y2, x-x2, y-y2) < 0)
+                        ok = false;
+                    if(ok)
+                    {
+                        rgb1[x][y][0] += r;
+                        rgb1[x][y][1] += g;
+                        rgb1[x][y][2] += b;
+                        rgb1[x][y][0] = Math.min(rgb1[x][y][0], 255);
+                        rgb1[x][y][1] = Math.min(rgb1[x][y][1], 255);
+                        rgb1[x][y][2] = Math.min(rgb1[x][y][2], 255);
+                        rgb1[x][y][0] = Math.max(rgb1[x][y][0], 0);
+                        rgb1[x][y][1] = Math.max(rgb1[x][y][1], 0);
+                        rgb1[x][y][2] = Math.max(rgb1[x][y][2], 0);
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < ImageFile.getHeight(); x++)
+            for (int y = 0; y < ImageFile.getWidth(); y++)
+                pixels[x * ImageFile.getWidth() + y] = Color.rgb(rgb1[x][y][0], rgb1[x][y][1], rgb1[x][y][2]);
+        ImageFile1 = ImageFile.copy(Bitmap.Config.ARGB_8888, true);
+        ImageFile1.setPixels(pixels, 0, ImageFile1.getWidth(), 0, 0, ImageFile1.getWidth(), ImageFile1.getHeight());
+        StringBuilder text = new StringBuilder();
+        for(boolean i : S)
+            if(i)
+                text.append('1');
+            else
+                text.append('0');
         return text.toString();
     }
     public void goBack()

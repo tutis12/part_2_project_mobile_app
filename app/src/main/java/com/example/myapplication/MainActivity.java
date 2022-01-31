@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +38,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
     private static final int PERMISSION_REQUEST_STORAGE = 1000;
     private Button button;
+    private Button buttonImage;
     private TextView textView;
+    private TextView textView1;
+    private TextView textView2;
+    private TextView textView3;
+    private Switch switch1;
+    private boolean image = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +57,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         button = (Button)findViewById(R.id.button2);
+        buttonImage = (Button)findViewById(R.id.button);
         textView = (TextView)findViewById(R.id.editTextNumberSigned);
+        textView1 = (TextView)findViewById(R.id.editTextNumberSigned2);
+        textView2 = (TextView)findViewById(R.id.editTextNumberSigned3);
+        textView3 = (TextView)findViewById(R.id.editTextNumberSigned4);
+        switch1 = (Switch)findViewById(R.id.switch1);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                image = false;
+                openFile2();
+            }
+        });
+        buttonImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                image = true;
                 openFile2();
             }
         });
@@ -106,9 +126,14 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(this, MainActivity3.class);
                 intent.putExtra("delay", textView.getText().toString());
+                intent.putExtra("iterations", textView1.getText().toString());
+                intent.putExtra("w", textView2.getText().toString());
+                intent.putExtra("h", textView3.getText().toString());
+                intent.putExtra("debug", switch1.isChecked());
                 intent.putExtra("file", fileContent);
                 intent.putExtra("path", path[0]);
                 intent.putExtra("name", path[1]);
+                intent.putExtra("image", image);
                 startActivity(intent);
             }
             super.onActivityResult(requestCode, resultCode, data);
