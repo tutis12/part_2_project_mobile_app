@@ -266,7 +266,6 @@ public class MainActivity3 extends AppCompatActivity {
             s /= 2;
         }
         Random rand = new Random();
-        long best = -1;
         int testc = 0;
         int logwh = 1;
         {
@@ -277,52 +276,110 @@ public class MainActivity3 extends AppCompatActivity {
                 logwh++;
             }
         }
+        long bst=-1;
+        int rr1=0, rr2=0;
         for(int tim = 0; tim < iterations; tim++)
         {
             int r1 = rand.nextInt(w*h);
             int r2 = rand.nextInt(w*h);
-            int x1 = r1 % h;
-            int y1 = r1 / h;
-            int x2 = r2 % h;
-            int y2 = r2 / h;
-            int d=Math.abs(x1-x2) + Math.abs(y2-y1);
-            if(d < 2)
+            long good = 0;
+            {
+                int x1 = r1 % h;
+                int y1 = r1 / h;
+                int x2 = r2 % h;
+                int y2 = r2 / h;
+                int d=(int)Math.floor(Math.sqrt((x1-x2)*(x1-x2)+ (y2-y1)*(y2-y1)))+1;
+                if(d < 2)
+                {
+                    tim--;
+                    continue;
+                }
+                float prop = (float)(d) / (float)(h+w);
+                if(tim < iterations/20)
+                {
+                    if(prop < 0.15 || prop > 0.4)
+                    {
+                        tim--;
+                        continue;
+                    }
+                }
+                else if (tim < iterations/20*2)
+                {
+                    if(prop > 0.20 || prop < 0.07)
+                    {
+                        tim--;
+                        continue;
+                    }
+                }
+                else if (tim < iterations/20*10)
+                {
+                    if(d > 25)
+                    {
+                        tim--;
+                        continue;
+                    }
+                }
+                else{
+                    if(d > 17)
+                    {
+                        tim--;
+                        continue;
+                    }
+                }
+                int x3 = ((x1 + x2) + (y2 - y1)) / 2;
+                int y3 = ((y1 + y2) + (x1 - x2)) / 2;
+                int x4 = ((x1 + x2) - (y2 - y1)) / 2;
+                int y4 = ((y1 + y2) - (x1 - x2)) / 2;
+                int xmn = Math.min(h - 1, Math.max(0, Math.min(Math.min(x1, x2) , Math.min(x3, x4))));
+                int ymn = Math.min(w - 1, Math.max(0, Math.min(Math.min(y1, y2) , Math.min(y3, y4))));
+                int xmx = Math.min(h - 1, Math.max(0, Math.max(Math.max(x1, x2) , Math.max(x3, x4))));
+                int ymx = Math.min(w - 1, Math.max(0, Math.max(Math.max(y1, y2) , Math.max(y3, y4))));
+                //int cnt = 0;
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                for(int x = xmn; x <= xmx; x++)
+                {
+                    for(int y = ymn; y <= ymx; y++)
+                    {
+                        boolean ok=true;
+                        if(dotP(x3-x1, y3-y1, x-x1, y-y1) < 0)
+                            ok = false;
+                        if(dotP(x4-x1, y4-y1, x-x1, y-y1) < 0)
+                            ok = false;
+                        if(dotP(x3-x2, y3-y2, x-x2, y-y2) < 0)
+                            ok = false;
+                        if(dotP(x4-x2, y4-y2, x-x2, y-y2) < 0)
+                            ok = false;
+                        if(ok)
+                        {
+                            //cnt++;
+                            r += rgb[x][y][0] - rgb1[x][y][0];
+                            g += rgb[x][y][1] - rgb1[x][y][1];
+                            b += rgb[x][y][2] - rgb1[x][y][2];
+                        }
+                    }
+                }
+                good = Math.abs(r) + Math.abs(g) + Math.abs(b);
+            }
+            testc++;
+            if(good > bst)
+            {
+                bst = good;
+                rr1 = r1;
+                rr2 = r2;
+            }
+            if(testc < 60)
             {
                 tim--;
                 continue;
             }
-            float prop = (float)(d) / (float)(h+w);
-            if(tim < iterations/20)
-            {
-                if(prop < 0.15 || prop > 0.4)
-                {
-                    tim--;
-                    continue;
-                }
-            }
-            else if (tim < iterations/20*2)
-            {
-                if(prop > 0.20 || prop < 0.07)
-                {
-                    tim--;
-                    continue;
-                }
-            }
-            else if (tim < iterations/20*10)
-            {
-                if(d > 25)
-                {
-                    tim--;
-                    continue;
-                }
-            }
-            else{
-                if(d > 17)
-                {
-                    tim--;
-                    continue;
-                }
-            }
+            r1 = rr1;
+            r2 = rr2;
+            int x1 = r1 % h;
+            int y1 = r1 / h;
+            int x2 = r2 % h;
+            int y2 = r2 / h;
             int x3 = ((x1 + x2) + (y2 - y1)) / 2;
             int y3 = ((y1 + y2) + (x1 - x2)) / 2;
             int x4 = ((x1 + x2) - (y2 - y1)) / 2;
@@ -357,20 +414,12 @@ public class MainActivity3 extends AppCompatActivity {
                     }
                 }
             }
-            long good = Math.abs(r) + Math.abs(g) + Math.abs(b);
             r/=cnt;
             g/=cnt;
             b/=cnt;
             r = Math.min(63, Math.max(r, -64));
             g = Math.min(63, Math.max(g, -64));
             b = Math.min(63, Math.max(b, -64));
-            testc++;
-            best = Math.max(best, good);
-            if(testc < 30 || best != good)
-            {
-                tim--;
-                continue;
-            }
             int it = 0;
             int lg = logwh;
             for (int vals : new int[]{r1, r2, r + 64,g + 64,b + 64})
@@ -388,9 +437,7 @@ public class MainActivity3 extends AppCompatActivity {
                 }
             }
 
-
-
-            best = -1;
+            bst = -1;
             testc = 0;
             for(int x = xmn; x <= xmx; x++)
             {
