@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView2;
     private TextView textView3;
     private Switch switch1;
+    private Switch switch2;
+    private Switch switch3;
     private boolean image = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         textView2 = (TextView)findViewById(R.id.editTextNumberSigned3);
         textView3 = (TextView)findViewById(R.id.editTextNumberSigned4);
         switch1 = (Switch)findViewById(R.id.switch1);
+        switch2 = (Switch)findViewById(R.id.switch2);
+        switch3 = (Switch)findViewById(R.id.switch3);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("w", textView2.getText().toString());
                 intent.putExtra("h", textView3.getText().toString());
                 intent.putExtra("debug", switch1.isChecked());
+                intent.putExtra("circles", switch2.isChecked());
+                intent.putExtra("cosines", switch3.isChecked());
                 intent.putExtra("file", fileContent);
                 intent.putExtra("path", path[0]);
                 intent.putExtra("name", path[1]);

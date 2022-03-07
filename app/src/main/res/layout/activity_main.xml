@@ -28,32 +28,19 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
-        android:id="@+id/editTextNumberSigned"
+        android:id="@+id/editTextNumberSigned2"
         android:layout_width="118dp"
         android:layout_height="67dp"
         android:ems="10"
         android:inputType="numberSigned"
-        android:text="333"
+        android:text="1500"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/editTextNumberSigned3"
-        android:layout_width="118dp"
-        android:layout_height="67dp"
-        android:ems="10"
-        android:inputType="numberSigned"
-        android:text="16"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366" />
+        app:layout_constraintVertical_bias="0.614" />
 
     <EditText
         android:id="@+id/editTextNumberSigned4"
@@ -68,34 +55,75 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22" />
+        app:layout_constraintVertical_bias="0.194" />
 
     <EditText
-        android:id="@+id/editTextNumberSigned2"
+        android:id="@+id/editTextNumberSigned3"
         android:layout_width="118dp"
         android:layout_height="67dp"
         android:ems="10"
         android:inputType="numberSigned"
-        android:text="1500"
+        android:text="16"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.339" />
+
+    <EditText
+        android:id="@+id/editTextNumberSigned"
+        android:layout_width="118dp"
+        android:layout_height="67dp"
+        android:ems="10"
+        android:inputType="numberSigned"
+        android:text="333"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.641" />
+        app:layout_constraintVertical_bias="0.474" />
 
     <Switch
         android:id="@+id/switch1"
         android:layout_width="212dp"
         android:layout_height="81dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="24dp"
         android:showText="false"
         android:text="Debug"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.221"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Debug" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="212dp"
+        android:layout_height="81dp"
+        android:layout_marginBottom="84dp"
+        android:showText="false"
+        android:text="Circles"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.221"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Circles" />
+
+    <Switch
+        android:id="@+id/switch3"
+        android:layout_width="212dp"
+        android:layout_height="81dp"
+        android:layout_marginBottom="144dp"
+        android:showText="false"
+        android:text="Cosines"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.221"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Cosines" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
